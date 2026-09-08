@@ -35,9 +35,11 @@ class AddressDao(Dao[Address]):
            (ou None s'il n'a pu être trouvé)"""
         address: Optional[Address]
 
+        sql = "SELECT * FROM address WHERE id_address = %s"
+        params = id_address
+
         with Dao.connection.cursor() as cursor:
-            sql = "SELECT * FROM address WHERE id_address = %s"
-            cursor.execute(sql, (id_address,))
+            cursor.execute(sql, params)
             record = cursor.fetchone()
             if record is not None:
                 address = Address(record['street'], record['postal_code'], record['city'])
@@ -54,9 +56,17 @@ class AddressDao(Dao[Address]):
         :param obj: objet déjà mis à jour en mémoire
         :return: True si la mise à jour a pu être réalisée
         """
-        pass
+        sql = "UPDATE address SET street = %s, city = %s, postal_code = %s WHERE id_address = %s"
+        params = (address.__getattribute__('street'), address.__getattribute__('city'),address.__getattribute__('postal_code'), address.__getattribute__('id_address'))
 
+        with Dao.connection.cursor() as cursor:
+            cursor.execute(sql, params)
+            rowcount = cursor.rowcount
 
+        Dao.connection.commit()
+
+        return rowcount > 0
+    
 
     def delete(self, address: Address) -> bool:
         """Supprime en BD l'entité correspondant à obj
@@ -65,9 +75,11 @@ class AddressDao(Dao[Address]):
         :return: True si la suppression a pu être réalisée
         """
 
+        sql = "DELETE FROM address WHERE id_course = %s"
+        params = address.__getattribute__('id_address').id
+
         with Dao.connection.cursor() as cursor:
-            sql = "DELETE FROM address WHERE id_course = %s";
-            cursor.execute(sql, address.__getattribute__('id_address').id)
+            cursor.execute(sql, params)
             rowcount = cursor.rowcount
 
         Dao.connection.commit()
