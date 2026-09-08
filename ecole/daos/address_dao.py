@@ -35,7 +35,20 @@ class AddressDao(Dao[Address]):
         pass
 
     def create(self, address: Address) -> int:
-        pass
+        """Crée en BD l'entité Address correspondant à l'adresse address
+
+        :param address: à créer sous forme d'entité Address en BD
+        :return: le nombre de lignes modifiées par la requête d'insertion en BD (0 si la création a échouée)
+        """
+
+        with Dao.connection.cursor() as cursor:
+            sql = "INSERT INTO address (street, city, postal_code) VALUES (%s, %s, %s)"
+            cursor.execute(sql, address.__getattribute__('street'), address.__getattribute__('city'). address.__getattribute__('postal_code'))
+            rowcount = cursor.rowcount
+
+        Dao.connection.commit()
+
+        return rowcount
 
 
 
