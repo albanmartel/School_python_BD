@@ -51,3 +51,11 @@ class Dao[T](ABC):
         :return: True si la suppression a pu être réalisée
         """
         ...
+
+    @abstractmethod
+    def count(self) -> int:
+        """ Compte le nombre de lignes d'une table
+
+        :return: Le nombre de lignes d'une table.
+        """
+        ...
