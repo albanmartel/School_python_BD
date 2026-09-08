@@ -16,7 +16,7 @@ class CourseDao(Dao[Course]):
         """Crée en BD l'entité Course correspondant au cours course
 
         :param course: à créer sous forme d'entité Course en BD
-        :return: l'id de l'entité insérée en BD (0 si la création a échoué)
+        :return: le nombre de lignes modifiées par la requête d'insertion en BD (0 si la création a échouée)
         """
         with Dao.connection.cursor() as cursor:
             sql = "INSERT INTO course(id_course, name, start_date, end_date, id_teacher) VALUES (%s, %s, %s, %s, %s)"
