@@ -13,27 +13,6 @@ from typing import Optional
 
 @dataclass
 class AddressDao(Dao[Address]):
-    def read(self, id_address: int) -> Optional[Address]:
-        address: Optional[Address]
-
-        with Dao.connection.cursor() as cursor:
-            sql = "SELECT * FROM address WHERE id_address = %s"
-            cursor.execute(sql, (id_address,))
-            record = cursor.fetchone()
-            if record is not None:
-                address = Address(record['street'], record['postal_code'], record['city'])
-                address.id = record['id_address']
-            else:
-                address = None
-
-        return address
-
-    def delete(self, address: Address) -> bool:
-        pass
-
-    def update(self, address: Address) -> bool:
-        pass
-
     def create(self, address: Address) -> int:
         """Crée en BD l'entité Address correspondant à l'adresse address
 
@@ -49,6 +28,51 @@ class AddressDao(Dao[Address]):
         Dao.connection.commit()
 
         return rowcount
+
+
+    def read(self, id_address: int) -> Optional[Address]:
+        """Renvoit l'objet correspondant à l'entité dont l'id est id_entity
+           (ou None s'il n'a pu être trouvé)"""
+        address: Optional[Address]
+
+        with Dao.connection.cursor() as cursor:
+            sql = "SELECT * FROM address WHERE id_address = %s"
+            cursor.execute(sql, (id_address,))
+            record = cursor.fetchone()
+            if record is not None:
+                address = Address(record['street'], record['postal_code'], record['city'])
+                address.id = record['id_address']
+            else:
+                address = None
+
+        return address
+
+
+    def update(self, address: Address) -> bool:
+        """Met à jour en BD l'entité correspondant à obj, pour y correspondre
+
+        :param obj: objet déjà mis à jour en mémoire
+        :return: True si la mise à jour a pu être réalisée
+        """
+        pass
+
+
+
+    def delete(self, address: Address) -> bool:
+        """Supprime en BD l'entité correspondant à obj
+
+        :param obj: objet dont l'entité correspondante est à supprimer
+        :return: True si la suppression a pu être réalisée
+        """
+
+        with Dao.connection.cursor() as cursor:
+            sql = "DELETE FROM address WHERE id_course = %s";
+            cursor.execute(sql, address.__getattribute__('id_address').id)
+            rowcount = cursor.rowcount
+
+        Dao.connection.commit()
+
+        return rowcount > 0
 
 
 
