@@ -20,9 +20,12 @@ class AddressDao(Dao[Address]):
         :return: le nombre de lignes modifiées par la requête d'insertion en BD (0 si la création a échouée)
         """
 
+        sql = "INSERT INTO address (street, city, postal_code) VALUES (%s, %s, %s)"
+        params = (address.__getattribute__('street'), address.__getattribute__('city'). address.__getattribute__('postal_code'))
+
         with Dao.connection.cursor() as cursor:
-            sql = "INSERT INTO address (street, city, postal_code) VALUES (%s, %s, %s)"
-            cursor.execute(sql, address.__getattribute__('street'), address.__getattribute__('city'). address.__getattribute__('postal_code'))
+
+            cursor.execute(sql, params)
             rowcount = cursor.rowcount
 
         Dao.connection.commit()
@@ -66,7 +69,7 @@ class AddressDao(Dao[Address]):
         Dao.connection.commit()
 
         return rowcount > 0
-    
+
 
     def delete(self, address: Address) -> bool:
         """Supprime en BD l'entité correspondant à obj
