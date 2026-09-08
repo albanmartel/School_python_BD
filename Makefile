@@ -1,9 +1,9 @@
 # Ce Makefile a été généré avec l'aide d'une IA.
 
-PYTHON := python3
-VENV := .venv
-PIP := $(VENV)/bin/pip
-PYTHON_VENV := $(VENV)/bin/python
+PYTHON := python
+VENV := ecole/.venv
+PIP := $(VENV)/Scripts/pip.exe
+PYTHON_VENV := $(VENV)/Scripts/python.exe
 
 .PHONY: venv install run clean
 
@@ -18,4 +18,5 @@ run: venv
 	$(PYTHON_VENV) ecole/main.py
 
 clean:
-	python -c "import shutil; shutil.rmtree('$(VENV)', ignore_errors=True)"
+	$(PYTHON) -c "import shutil; shutil.rmtree('$(VENV)', ignore_errors=True)"
+
