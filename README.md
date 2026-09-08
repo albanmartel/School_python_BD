@@ -1,7 +1,13 @@
 # Projet School_python_BD
 
 Ce projet est une mise en pratique de l'utilisation d'une base de donnée
-par python avec le pratron de conception DAO.
+par python avec le patron de conception DAO.
+
+## Objectif du projet Ecole persistante
+
+Compléter l’application Ecole comportant un embryon de l’implémentation du design pattern DAO pour permettre une persistance complète de l’application. Modifier celle-ci pour qu’elle charge au lancement toutes les entités de la BD ecole.
+
+**Optionnel** : compléter l’application pour qu’elle réponde à ses spécifications complètes
 
 ## Spécifications fonctionnelles gestion d’une école, v1.0
 
@@ -63,7 +69,7 @@ Elle correspond au scénario suivant : l’arrivée dans l’école de l’élè
 
 <img width="585" height="430" alt="student_arrival-sequence" src="https://github.com/user-attachments/assets/b6a36eab-3c9c-43ed-9dd8-9a5420a50a71" />
 
-Assignation d’un enseignant à un cours
+#### Assignation d’un enseignant à un cours
 
 <img width="892" height="511" alt="set_course_teacher-sequence" src="https://github.com/user-attachments/assets/c052aee8-89e7-4201-9f2e-db4e619cf4ba" />
 
@@ -71,10 +77,9 @@ Assignation d’un enseignant à un cours
 
 Limite du périmètre fonctionnelle de l’application : couche métier uniquement.
 
-                              **APPLICATION MULTI COUCHE***
+**APPLICATION MULTI COUCHE**
+
 <img width="1705" height="862" alt="ApplicationMultiCouche" src="https://github.com/user-attachments/assets/aa631331-121c-4fbd-9a6b-f000bea6fec5" />
-
-
 
 #### Modèle Conceptuel des Données (MCD) de la base de données ecole
 
