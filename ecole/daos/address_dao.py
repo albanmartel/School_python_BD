@@ -5,6 +5,7 @@ Classe Dao[Address]
 """
 from email.headerregistry import Address
 
+from models import address
 from models.address import Address
 from daos.dao import Dao
 from dataclasses import dataclass
@@ -21,16 +22,18 @@ class AddressDao(Dao[Address]):
         """
 
         sql = "INSERT INTO address (street, city, postal_code) VALUES (%s, %s, %s)"
-        params = (address.__getattribute__('street'), address.__getattribute__('city'). address.__getattribute__('postal_code'))
+        params = (address.__getattribute__('street'), address.__getattribute__('city'), address.__getattribute__('postal_code'))
+
+        new_id: int = 0
 
         with Dao.connection.cursor() as cursor:
 
             cursor.execute(sql, params)
-            rowcount = cursor.rowcount
+            new_id: int = cursor.lastrowid
 
         Dao.connection.commit()
 
-        return rowcount
+        return new_id
 
 
     def read(self, id_address: int) -> Optional[Address]:
@@ -60,7 +63,7 @@ class AddressDao(Dao[Address]):
         :return: True si la mise à jour a pu être réalisée
         """
         sql = "UPDATE address SET street = %s, city = %s, postal_code = %s WHERE id_address = %s"
-        params = (address.__getattribute__('street'), address.__getattribute__('city'),address.__getattribute__('postal_code'), address.__getattribute__('id_address'))
+        params = (address.__getattribute__('street'), address.__getattribute__('city'), address.__getattribute__('postal_code'), address.__getattribute__('id_address'))
 
         with Dao.connection.cursor() as cursor:
             cursor.execute(sql, params)
@@ -89,6 +92,7 @@ class AddressDao(Dao[Address]):
 
         return rowcount > 0
 
+
     def count(self) -> int:
         """ Compte le nombre de lignes d'une table
 
@@ -100,6 +104,9 @@ class AddressDao(Dao[Address]):
             cursor.execute(sql)
             result = cursor.fetchone()
 
-        # fetchone() renvoie un tuple comme (12,), donc on prend le premier élément [0]
-        return result[0] if result else 0
+        # Si cursor renvoie un dict (ex: DictCursor), on extrait la première valeur
+        if result:
+            return result[0] if isinstance(result, (tuple, list)) else list(result.values())[0]
+
+        return 0
 
