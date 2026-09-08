@@ -89,5 +89,17 @@ class AddressDao(Dao[Address]):
 
         return rowcount > 0
 
+    def count(self) -> int:
+        """ Compte le nombre de lignes d'une table
 
+        :return: Le nombre de lignes d'une table.
+        """
+        sql = "SELECT COUNT(*) FROM address"
+
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql)
+            result = cursor.fetchone()
+
+        # fetchone() renvoie un tuple comme (12,), donc on prend le premier élément [0]
+        return result[0] if result else 0
 
