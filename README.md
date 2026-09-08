@@ -73,6 +73,43 @@ Elle correspond au scénario suivant : l’arrivée dans l’école de l’élè
 
 <img width="892" height="511" alt="set_course_teacher-sequence" src="https://github.com/user-attachments/assets/c052aee8-89e7-4201-9f2e-db4e619cf4ba" />
 
+**Description textuelle Assigner : "un enseignant à un cours"**
+
+**Nom du cas d’utilisation**  Assigner un enseignant à un cours
+
+**Objectif** : Permettre au système de définir quel enseignant est responsable      d’un cours
+
+**Acteur principal** : Directeur
+
+**Préconditions**:
+
+- Le cours existe.
+- L’enseignant existe.
+						   
+**Scénario nominal** : 
+
+- L’acteur sélectionne un cours.
+- L’acteur sélectionne un enseignant à assigner.
+- Le système vérifie si le cours avait déjà un enseignant.
+- Si un ancien enseignant était assigné :
+  - le système retire le cours de la liste des cours enseignés par cet              ancien enseignant.
+  - Le système ajoute le cours à la liste des cours du nouvel enseignant.
+  - Le système met à jour l’attribut teacher du cours.
+  - Le système confirme l’assignation.
+
+**Scénario alternatif** :
+- [A1] : Si l’enseignant indiqué est déjà l’enseignant du cours
+  - aucune action n’est effectuée et la méthode se termine immédiatement.
+- [A2] : L’ancien enseignant ne contient pas le cours dans sa liste: 
+  - Le système ignore la suppression (considéré comme incohérence interne).
+- [A3] : Le cours est déjà dans la liste du nouvel enseignant
+  - le système ajoute le cours une seule fois (pas de duplication de liste).
+
+**Postconditions** : 
+- Le cours est associé à l’enseignant indiqué.
+- Le cours n’est plus associé à un ancien enseignant éventuel.
+- La liste des cours enseignés par les enseignants impliqués est mise à jour correctement.
+
 ### V. Annexe
 
 Limite du périmètre fonctionnelle de l’application : couche métier uniquement.
