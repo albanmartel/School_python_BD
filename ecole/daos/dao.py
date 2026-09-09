@@ -6,7 +6,7 @@ Classe abstraite générique Dao[T], dont hérite les classes de DAO de chaque e
 
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
-from typing import ClassVar, Optional
+from typing import ClassVar, Optional, Any
 import pymysql.cursors
 
 
@@ -45,7 +45,7 @@ class Dao[T](ABC):
 
         return int(number)
 
-    def read_all_table(self, table_name) -> list[T]:
+    def read_all_table(self, table_name) -> list[dict[str, Any]]:
         """
         Renvoit une liste d'objets à tous les enregistrement d'une entité
         (ou None s'il n'a pu être trouvé)
@@ -53,7 +53,7 @@ class Dao[T](ABC):
         """
 
         sql = f"SELECT * FROM {table_name}"
-        record_list: list[T] = []
+        record_list: list[dict[str, Any]] = []
         columns= []
 
         with Dao.connection.cursor() as cursor:
@@ -64,19 +64,22 @@ class Dao[T](ABC):
                 for col in cursor.description:
                     # Note : le nom du champs est au début
                     columns.append(col[0])
-                    
-        if records is not None and len(columns) > 0:
-            for record in records:
-                record_dict = {}
-                
-                for i in range(len(columns)):
-                    field = columns[i]
-                    value = record[i]
-                    record_dict[field] = value
 
-                # Instancier l'objet à partir du dictionnaire
-                entity = self._map_to_entity(record_dict)
-                record_list.append(record_dict)
+        if records:
+            for record in records:
+                # CAS 1 : Le curseur renvoie DÉJÀ un dictionnaire
+                if isinstance(record, dict):
+                    record_list.append(record)
+
+                # CAS 2 : Le curseur renvoie un tuple
+                elif len(columns) > 0:
+                    record_dict = {}
+                    for i in range(len(columns)):
+                        field = columns[i]
+                        value = record[i]
+                        record_dict[field] = value
+
+                    record_list.append(record_dict)
         
         return record_list
 
@@ -147,13 +150,5 @@ class Dao[T](ABC):
 
         :param obj: objet dont l'entité correspondante est à supprimer
         :return: True si la suppression a pu être réalisée
-        """
-        ...
-
-    @abstractmethod
-    def count(self) -> int:
-        """ Compte le nombre de lignes d'une table
-
-        :return: Le nombre de lignes d'une table.
         """
         ...
