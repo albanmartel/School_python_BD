@@ -39,22 +39,21 @@ class AddressDao(Dao[Address]):
     def read(self, id_address: int) -> Optional[Address]:
         """Renvoit l'objet correspondant à l'entité dont l'id est id_entity
            (ou None s'il n'a pu être trouvé)"""
-        address: Optional[Address]
+        address_read: Optional[Address] = None
 
-        sql = "SELECT * FROM address WHERE id_address = %s"
-        params = id_address
+        address_local = Address("rue tartanpion", "ville-de-quelquepart", "99999")
 
-        with Dao.connection.cursor() as cursor:
-            cursor.execute(sql, params)
-            record = cursor.fetchone()
-            if record is not None:
-                address = Address(record['street'], record['postal_code'], record['city'])
-                address.id = record['id_address']
-            else:
-                address = None
+        return_dict: dict[str, Any] = self.read_one(id_address, "address")
 
-        return address
+        if return_dict is not None:
+            address_local.id = return_dict["id_address"]
+            address_local.street = return_dict["street"]
+            address_local.city = return_dict["city"]
+            address_local.postal_code = return_dict["postal_code"]
 
+            address_read = address_local
+
+        return address_read
 
     def update(self, address: Address) -> bool:
         """Met à jour en BD l'entité correspondant à obj, pour y correspondre
