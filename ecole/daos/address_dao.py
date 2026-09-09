@@ -3,6 +3,7 @@
 """
 Classe Dao[Address]
 """
+
 from models import address
 from models.address import Address
 from daos.dao import Dao
@@ -79,8 +80,8 @@ class AddressDao(Dao[Address]):
         :return: True si la suppression a pu être réalisée
         """
 
-        sql = "DELETE FROM address WHERE id_course = %s"
-        params = address.__getattribute__('id_address').id
+        sql = "DELETE FROM address WHERE id_address = %s"
+        params = address.id
 
         with Dao.connection.cursor() as cursor:
             cursor.execute(sql, params)
