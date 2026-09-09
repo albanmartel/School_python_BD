@@ -19,18 +19,18 @@ class Dao[T](ABC):
                         database='ecole',
                         cursorclass=pymysql.cursors.DictCursor)
 
-    def init_counter(self, table_id: str, max_alias: str, table_name: str) -> int:
+    def init_counter(self, id_name: str, max_alias: str, table_name: str) -> int:
         """
         retourne la valeur maximale d'id dans la table
 
-        :param table_id: identifiant unique de la table
+        :param id_name: identifiant unique de la table
         :param max_alias: alias du nombre de l'id de la table
         :param table_name: nom de la table
         """
 
         number: int = 0
 
-        sql = f"SELECT COALESCE(MAX({table_id}), 0) AS {max_alias} FROM {table_name}"
+        sql = f"SELECT COALESCE(MAX({id_name}), 0) AS {max_alias} FROM {table_name}"
         with Dao.connection.cursor() as cursor:
             cursor.execute(sql)
             record = cursor.fetchone()
@@ -83,19 +83,24 @@ class Dao[T](ABC):
         
         return record_list
 
-    def read_one(self, table_id: int, table_name: str) -> dict[str, Any]:
+    def read_one(self, id_name: str, table_name: str, table_id: int) -> dict[str, Any]:
         """
         Renvoit l'objet correspondant à l'entité dont l'id est id_entity
            (ou None s'il n'a pu être trouvé)
-        :param table_id: l'identifiant de la table
+
+        :param id_name: nom de l'identifiant de la table
         :param table_name: nom de la table
+        :param table_id: numero de l'identifiant à lire
+
+        :return: un dictionnaire de la ligne concernée
         """
-        sql = f"SELECT * FROM {table_name} WHERE id_address = {table_id}"
+        sql = f"SELECT * FROM {table_name} WHERE {id_name} = %s"
+        param = table_id
         record_dict: dict[str, Any] = {}
         columns = []
 
         with Dao.connection.cursor() as cursor:
-            cursor.execute(sql)
+            cursor.execute(sql, param)
             record = cursor.fetchone()
 
             if cursor.description is not None:
@@ -128,16 +133,49 @@ class Dao[T](ABC):
         :return: True si la suppression a pu se réaliser
         """
 
-        sql = f"DELETE FROM {table_name} WHERE {id_name} = {id_table}"
+        sql = f"DELETE FROM {table_name} WHERE {id_name} = %s"
+        param = id_table
 
         with Dao.connection.cursor() as cursor:
-            cursor.execute(sql)
+            cursor.execute(sql, param)
             rowcount = cursor.rowcount
 
         Dao.connection.commit()
 
         # si le nombre de ligne(s) supprimée(s) est suppérieur à zéro
         return rowcount > 0
+
+    def insert(self, table_name: str, table_params: list[str], values_params: tuple) -> int:
+        """
+        Méthode générique pour l'insertion, une partie de la requête est paramétrée
+        pour plus de sécurité.
+        Si une exception a lieu elle est levée et affichée la valeur de zéro est renvoyée
+        cela permet d'informer que la requête a échoué
+
+        :param table_name:
+        :param table_params:
+        :param values_params:
+        :return: un entier soit l'id inséré soit 0 (échec)
+        """
+
+        params_str = ", ".join(table_params)
+        placeholders = ", ".join(["%s"] * len(values_params))
+
+        sql = f"INSERT INTO {table_name} ({params_str}) VALUES ({placeholders})"
+
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(sql, values_params)
+                new_id: int = cursor.lastrowid
+            Dao.connection.commit()
+
+            return new_id
+
+        except Exception as e:
+            Dao.connection.rollback()
+            print(f"Une exception s'est produite : {e}")
+
+            return 0
 
     @abstractmethod
     def create(self, obj: T) -> int:
