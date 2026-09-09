@@ -6,7 +6,6 @@ Application de test de dao address
 """
 
 from daos.address_dao import AddressDao
-from models import address
 from models.address import Address
 from typing import Optional
 
@@ -17,6 +16,8 @@ def main():
     result: int = 0
 
     address_dao = AddressDao()
+
+    print(f"Test id max table address : {address_dao.init_counter("id_address", "Max_Id_Address", "address")}")
 
     taille_de_la_table = address_dao.count()
     print("table a %s élément(s) avant la création d'une nouvelle adresse" % taille_de_la_table)
