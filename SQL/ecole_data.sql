@@ -1,9 +1,9 @@
 USE ecole;
 
 INSERT INTO address (id_address, street, city, postal_code) VALUES
-(1, '12 rue des Pinsons', 'Castanet', 31320),
-(2, '43 avenue Jean Zay', 'Toulouse', 31200),
-(3, '7 impasse des Coteaux', 'Cornebarrieu', 31150);
+(1, '12 rue des Pinsons', 'Castanet', '31320'),
+(2, '43 avenue Jean Zay', 'Toulouse', '31200'),
+(3, '7 impasse des Coteaux', 'Cornebarrieu', '31150');
 
 INSERT INTO person (id_person, first_name, last_name, age, id_address) VALUES
 (1, 'Paul', 'Dubois', 12, 1),
