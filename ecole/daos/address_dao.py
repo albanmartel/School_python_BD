@@ -80,16 +80,7 @@ class AddressDao(Dao[Address]):
         :return: True si la suppression a pu être réalisée
         """
 
-        sql = "DELETE FROM address WHERE id_address = %s"
-        params = address.id
-
-        with Dao.connection.cursor() as cursor:
-            cursor.execute(sql, params)
-            rowcount = cursor.rowcount
-
-        Dao.connection.commit()
-
-        return rowcount > 0
+        return self.delete_in_table("address", "id_address", address.id)
 
     def read_table(self) -> list[Address]:
         return self.read_all_table("address")

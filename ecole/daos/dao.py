@@ -47,7 +47,7 @@ class Dao[T](ABC):
 
     def read_all_table(self, table_name) -> list[dict[str, Any]]:
         """
-        Renvoit une liste d'objets à tous les enregistrement d'une entité
+        Renvoit une liste d'objets à tous les enregistrements d'une entité
         (ou None s'il n'a pu être trouvé)
         :param table_name: nom de la table
         """
@@ -62,7 +62,7 @@ class Dao[T](ABC):
 
             if cursor.description is not None:
                 for col in cursor.description:
-                    # Note : le nom du champs est au début
+                    # Note : le nom du champ est au début
                     columns.append(col[0])
 
         if records:
@@ -118,20 +118,20 @@ class Dao[T](ABC):
 
         return record_dict
 
-    def delete_in_table(self, id_table: int, table_name: str) -> bool:
+    def delete_in_table(self, table_name: str, id_name:str, id_table: int ) -> bool:
         """Supprime en BD l'entité correspondant à id de table
 
+        :param id_name: nom de l'identifiant dans la table
         :param id_table: l'id de la ligne à supprimer
         :param table_name: le nom de la table concernée par la suppression de ligne
         
-        :return: True si la suppression a pu être réalisée
+        :return: True si la suppression a pu se réaliser
         """
 
-        sql = "DELETE FROM %s WHERE id_course = %s"
-        params = (table_name, id_table)
+        sql = f"DELETE FROM {table_name} WHERE {id_name} = {id_table}"
 
         with Dao.connection.cursor() as cursor:
-            cursor.execute(sql, params)
+            cursor.execute(sql)
             rowcount = cursor.rowcount
 
         Dao.connection.commit()
