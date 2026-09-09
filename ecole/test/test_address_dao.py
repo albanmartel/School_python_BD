@@ -41,6 +41,11 @@ def main():
         print("La mise à jour s'est effectuée avec succès")
     else:
         print("Problème de mise à jour")
+    print("Test delete d'une address avec la méthode dao ")
+    if address_dao.delete(address_instance):
+        print("la Suppression s'est effectuée avec succès")
+    else:
+        print("Problème de suppression")
 
     print("Fin test address_dao")
 
