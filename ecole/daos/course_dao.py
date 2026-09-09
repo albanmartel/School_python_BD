@@ -7,7 +7,7 @@ Classe Dao[Course]
 from models.course import Course
 from daos.dao import Dao
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Any
 
 
 @dataclass
@@ -61,3 +61,12 @@ class CourseDao(Dao[Course]):
         """
         ...
         return True
+
+    def read_table(self) -> list[dict[str, Any]]:
+        """
+        Renvoit une liste d'objets à tous les enregistrements d'une entité
+        (ou None s'il n'a pu être trouvé)
+
+        :return: liste de dictionnaires de la table Course
+        """
+        return self.read_all_table("course")
