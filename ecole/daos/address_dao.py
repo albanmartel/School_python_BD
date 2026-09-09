@@ -45,16 +45,16 @@ class AddressDao(Dao[Address]):
         :param obj: objet déjà mis à jour en mémoire
         :return: True si la mise à jour a pu être réalisée
         """
-        sql = "UPDATE address SET street = %s, city = %s, postal_code = %s WHERE id_address = %s"
-        params = (address.street, address.city, address.postal_code, address.id)
+        table_name: str = "address"
+        data_dict: dict = {
+            "street": address.street,
+            "city": address.city,
+            "postal_code": address.postal_code
+        }
+        id_name: str = "id_address"
+        id_value: int = address.id
 
-        with Dao.connection.cursor() as cursor:
-            cursor.execute(sql, params)
-            rowcount = cursor.rowcount
-
-        Dao.connection.commit()
-
-        return rowcount > 0
+        return self.modify(table_name, data_dict, id_name, id_value)
 
     def delete(self, address: Address) -> bool:
         """Supprime en BD l'entité correspondant à obj
@@ -75,6 +75,7 @@ class AddressDao(Dao[Address]):
 
         :return: liste de dictionnaires de la table Address
         """
+
         return self.read_all_table("address")
 
 if __name__ == '__main__':
