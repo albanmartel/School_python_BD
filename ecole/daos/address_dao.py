@@ -21,19 +21,11 @@ class AddressDao(Dao[Address]):
         """
         address.id = int(self.init_counter("id_address", "Max_id_address", "address")) + 1
 
-        sql = "INSERT INTO address (id_address, street, city, postal_code) VALUES (%s, %s, %s, %s)"
-        params = (address.id, address.street, address.city, address.postal_code)
+        values_param: tuple = (address.id, address.street, address.city, address.postal_code)
+        table_params: list[str] = ["id_address", "street", "city", "postal_code"]
+        table_name: str = "address"
 
-        new_id: int = 0
-
-        with Dao.connection.cursor() as cursor:
-
-            cursor.execute(sql, params)
-            new_id: int = cursor.lastrowid
-
-        Dao.connection.commit()
-
-        return new_id
+        return self.insert(table_name, table_params, values_param)
 
     def read(self, address: Address) -> Optional[Address]:
         """Renvoit l'objet correspondant à l'entité dont l'id est id_entity
@@ -60,15 +52,17 @@ class AddressDao(Dao[Address]):
 
         return rowcount > 0
 
-
     def delete(self, address: Address) -> bool:
         """Supprime en BD l'entité correspondant à obj
 
         :param obj: objet dont l'entité correspondante est à supprimer
         :return: True si la suppression a pu être réalisée
         """
+        table_name:str = "address"
+        id_name: str = "id_address"
+        id_value: int = address.id
 
-        return self.delete_in_table("address", "id_address", address.id)
+        return self.delete_in_table(table_name, id_name, id_value)
 
     def read_table(self) -> list[dict[str, Any]]:
         """
@@ -78,7 +72,6 @@ class AddressDao(Dao[Address]):
         :return: liste de dictionnaires de la table Address
         """
         return self.read_all_table("address")
-
 
 if __name__ == '__main__':
     obj: AddressDao = AddressDao()
