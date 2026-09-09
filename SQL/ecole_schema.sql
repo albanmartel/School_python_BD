@@ -23,7 +23,7 @@ CREATE TABLE address (
   id_address int NOT NULL AUTO_INCREMENT,
   street varchar(80) NOT NULL,
   city varchar(50) NOT NULL,
-  postal_code smallint NOT NULL,
+  postal_code varchar(6) NOT NULL,
   PRIMARY KEY (id_address)
 );
 
