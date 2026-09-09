@@ -136,14 +136,20 @@ class Dao[T](ABC):
         sql = f"DELETE FROM {table_name} WHERE {id_name} = %s"
         param = id_table
 
-        with Dao.connection.cursor() as cursor:
-            cursor.execute(sql, param)
-            rowcount = cursor.rowcount
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(sql, param)
+                rowcount = cursor.rowcount
+            Dao.connection.commit()
 
-        Dao.connection.commit()
+            # si le nombre de ligne(s) supprimée(s) est superieur à zéro
+            return rowcount > 0
 
-        # si le nombre de ligne(s) supprimée(s) est suppérieur à zéro
-        return rowcount > 0
+        except Exception as e:
+            Dao.connection.rollback()
+            print(f"Une exception s'est produite : {e}")
+
+            return False
 
     def insert(self, table_name: str, table_params: list[str], values_params: tuple) -> int:
         """
