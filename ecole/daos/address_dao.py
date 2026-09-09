@@ -97,7 +97,4 @@ class AddressDao(Dao[Address]):
 
 if __name__ == '__main__':
     obj: AddressDao = AddressDao()
-    recordings: list[dict[str, Any]] = obj.read_table()
-    for record in recordings:
-        print(record)
 
