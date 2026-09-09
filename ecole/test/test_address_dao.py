@@ -18,15 +18,11 @@ def main():
     address_dao = AddressDao()
 
     print(f"Test id max table address : {address_dao.init_counter("id_address", "Max_Id_Address", "address")}")
-
-    taille_de_la_table = address_dao.count()
-    print("table a %s élément(s) avant la création d'une nouvelle adresse" % taille_de_la_table)
-
+    print(f"Test de read_all_table: {address_dao.read_table()}")
     address_instance: Address = Address('1 place du Capitole', 'Toulouse', '31040')
 
     print("Test creation d'une address avec la méthode dao ")
     new_id: int = address_dao.create(address_instance)
-    print("%s élément(s) a été ajouté à la table" % (address_dao.count() - taille_de_la_table))
     print("Test lecture d'une address avec la méthode dao ")
     address_instance: Optional[Address] = address_dao.read(new_id)
     print("Lecture de l'élément précédemment créé :\n%s" % address_instance)
