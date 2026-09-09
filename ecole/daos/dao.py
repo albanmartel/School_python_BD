@@ -19,6 +19,28 @@ class Dao[T](ABC):
                         database='ecole',
                         cursorclass=pymysql.cursors.DictCursor)
 
+    def init_counter(self, table_id: str, max_alias: str, table_name: str) -> int:
+        """
+        retourne la valeur maximale d'id dans la table
+
+        :param table_id: identifiant unique de la table
+        :param max_alias: alias du nombre de l'id de la table
+        :param table_name: nom de la table
+        """
+
+        number: int = 0
+
+        sql = "SELECT COALESCE(MAX(%s), 0) AS %s FROM %s"
+        params = (table_id, max_alias, table_name)
+        with Dao.connection.cursor() as cursor:
+            cursor.execute(sql, params)
+            record = cursor.fetchone()
+
+        if record is not None:
+            number = record[max_alias]
+
+        return number
+        
     @abstractmethod
     def create(self, obj: T) -> int:
         """Crée l'entité en BD correspondant à l'objet obj
