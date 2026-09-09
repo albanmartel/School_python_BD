@@ -202,7 +202,7 @@ class Dao[T](ABC):
 
             return 0
 
-    def modify(self, table_name: str, data: dict, id_column: str, id_value: any ) -> bool:
+    def modify(self, table_name: str, data: dict, id_column: str, id_value: int ) -> bool:
             """Mets à jour une ligne dans la table spécifiée.
 
             :param table_name: Nom de la table SQL (ex: 'address')
@@ -226,9 +226,9 @@ class Dao[T](ABC):
                 with Dao.connection.cursor() as cursor:
                     cursor.execute(sql, params)
                     rowcount = cursor.rowcount
+                    Dao.connection.commit()
 
-                Dao.connection.commit()
-                return rowcount > 0
+                    return rowcount > 0
 
             except Exception as e:
                 Dao.connection.rollback()
