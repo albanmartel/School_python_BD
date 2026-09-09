@@ -40,7 +40,24 @@ class Dao[T](ABC):
             number = record[max_alias]
 
         return number
-        
+
+    def read_all_table(self, table_name) -> list[T]:
+        """
+        Renvoit une liste d'objets à tous les enregistrement d'une entité
+        (ou None s'il n'a pu être trouvé)
+        :param table_name: nom de la table
+        """
+
+        sql = "SELECT * FROM address WHERE id_address"
+        param = table_name
+        records = None
+
+        with Dao.connection.cursor() as cursor:
+            cursor.execute(sql, param)
+            records = cursor.fetchall()
+
+        return records
+    
     @abstractmethod
     def create(self, obj: T) -> int:
         """Crée l'entité en BD correspondant à l'objet obj
