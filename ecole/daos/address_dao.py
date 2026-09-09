@@ -35,25 +35,13 @@ class AddressDao(Dao[Address]):
 
         return new_id
 
-
-    def read(self, id_address: int) -> Optional[Address]:
+    def read(self, address: Address) -> Optional[Address]:
         """Renvoit l'objet correspondant à l'entité dont l'id est id_entity
-           (ou None s'il n'a pu être trouvé)"""
-        address_read: Optional[Address] = None
+           (ou None s'il n'a pu être trouvé)
 
-        address_local = Address("rue tartanpion", "ville-de-quelquepart", "99999")
-
-        return_dict: dict[str, Any] = self.read_one(id_address, "address")
-
-        if return_dict is not None:
-            address_local.id = return_dict["id_address"]
-            address_local.street = return_dict["street"]
-            address_local.city = return_dict["city"]
-            address_local.postal_code = return_dict["postal_code"]
-
-            address_read = address_local
-
-        return address_read
+        :return un dictionnaire de la ligne concernée
+        """
+        return self.read_one(address.id, "address")
 
     def update(self, address: Address) -> bool:
         """Met à jour en BD l'entité correspondant à obj, pour y correspondre
@@ -82,7 +70,13 @@ class AddressDao(Dao[Address]):
 
         return self.delete_in_table("address", "id_address", address.id)
 
-    def read_table(self) -> list[Address]:
+    def read_table(self) -> list[dict[str, Any]]:
+        """
+        Renvoit une liste d'objets à tous les enregistrements d'une entité
+        (ou None s'il n'a pu être trouvé)
+
+        :return: liste de dictionnaires de la table Address
+        """
         return self.read_all_table("address")
 
 
