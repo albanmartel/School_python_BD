@@ -8,7 +8,7 @@ from models import address
 from models.address import Address
 from daos.dao import Dao
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Any
 
 
 @dataclass
@@ -92,7 +92,13 @@ class AddressDao(Dao[Address]):
 
         return rowcount > 0
 
+    def read_table(self) -> list[Address]:
+        return self.read_all_table("address")
+
 
 if __name__ == '__main__':
     obj: AddressDao = AddressDao()
+    recordings: list[dict[str, Any]] = obj.read_table()
+    for record in recordings:
+        print(record)
 
