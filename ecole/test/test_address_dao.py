@@ -21,7 +21,7 @@ def main():
     taille_de_la_table = address_dao.count()
     print("table a %s élément(s) avant la création d'une nouvelle adresse" % taille_de_la_table)
 
-    address_instance: Address = Address('1 place du Capitole', 'Toulouse', 31040)
+    address_instance: Address = Address('1 place du Capitole', 'Toulouse', '31040')
 
     print("Test creation d'une address avec la méthode dao ")
     new_id: int = address_dao.create(address_instance)
@@ -30,9 +30,6 @@ def main():
     address_instance: Optional[Address] = address_dao.read(new_id)
     print("Lecture de l'élément précédemment créé :\n%s" % address_instance)
     print("Test Update d'une address avec la méthode dao ")
-
-    print("Test Update d'une address avec la méthode dao")
-
     # On prépare l'objet Address avec ses nouvelles valeurs
     address_instance.id_address = new_id
     address_instance.street = '1 place du Capitole'
