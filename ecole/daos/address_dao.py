@@ -3,8 +3,6 @@
 """
 Classe Dao[Address]
 """
-from email.headerregistry import Address
-
 from models import address
 from models.address import Address
 from daos.dao import Dao
