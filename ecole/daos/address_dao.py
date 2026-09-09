@@ -17,11 +17,12 @@ class AddressDao(Dao[Address]):
         """Crée en BD l'entité Address correspondant à l'adresse address
 
         :param address: à créer sous forme d'entité Address en BD
-        :return: le nombre de lignes modifiées par la requête d'insertion en BD (0 si la création a échouée)
+        :return: le nombre de lignes modifiées par la requête d'insertion en BD (0 si la création a échoué)
         """
+        address.id = int(self.init_counter("id_address", "Max_id_address", "address")) + 1
 
-        sql = "INSERT INTO address (street, city, postal_code) VALUES (%s, %s, %s)"
-        params = (address.street, address.city, address.postal_code)
+        sql = "INSERT INTO address (id_address, street, city, postal_code) VALUES (%s, %s, %s, %s)"
+        params = (address.id, address.street, address.city, address.postal_code)
 
         new_id: int = 0
 
@@ -108,4 +109,9 @@ class AddressDao(Dao[Address]):
             return result[0] if isinstance(result, (tuple, list)) else list(result.values())[0]
 
         return 0
+
+
+if __name__ == '__main__':
+    obj: AddressDao = AddressDao()
+    print(obj.max_id())
 
