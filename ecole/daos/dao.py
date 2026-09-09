@@ -56,30 +56,34 @@ class Dao[T](ABC):
         record_list: list[dict[str, Any]] = []
         columns= []
 
-        with Dao.connection.cursor() as cursor:
-            cursor.execute(sql)
-            records = cursor.fetchall()
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(sql)
+                records = cursor.fetchall()
 
-            if cursor.description is not None:
-                for col in cursor.description:
-                    # Note : le nom du champ est au début
-                    columns.append(col[0])
+                if cursor.description is not None:
+                    for col in cursor.description:
+                        # Note : le nom du champ est au début
+                        columns.append(col[0])
 
-        if records:
-            for record in records:
-                # CAS 1 : Le curseur renvoie DÉJÀ un dictionnaire
-                if isinstance(record, dict):
-                    record_list.append(record)
+            if records:
+                for record in records:
+                    # CAS 1 : Le curseur renvoie DÉJÀ un dictionnaire
+                    if isinstance(record, dict):
+                        record_list.append(record)
 
-                # CAS 2 : Le curseur renvoie un tuple
-                elif len(columns) > 0:
-                    record_dict = {}
-                    for i in range(len(columns)):
-                        field = columns[i]
-                        value = record[i]
-                        record_dict[field] = value
+                    # CAS 2 : Le curseur renvoie un tuple
+                    elif len(columns) > 0:
+                        record_dict = {}
+                        for i in range(len(columns)):
+                            field = columns[i]
+                            value = record[i]
+                            record_dict[field] = value
 
-                    record_list.append(record_dict)
+                        record_list.append(record_dict)
+
+        except Exception as e:
+            print(f"Une exception s'est produite : {e}")
         
         return record_list
 
