@@ -41,7 +41,7 @@ class AddressDao(Dao[Address]):
 
         :return un dictionnaire de la ligne concernée
         """
-        return self.read_one(address.id, "address")
+        return self.read_one("id_address", "address", address.id)
 
     def update(self, address: Address) -> bool:
         """Met à jour en BD l'entité correspondant à obj, pour y correspondre
