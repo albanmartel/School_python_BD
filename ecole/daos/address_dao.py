@@ -93,25 +93,6 @@ class AddressDao(Dao[Address]):
         return rowcount > 0
 
 
-    def count(self) -> int:
-        """ Compte le nombre de lignes d'une table
-
-        :return: Le nombre de lignes d'une table.
-        """
-        sql = "SELECT COUNT(*) FROM address"
-
-        with self.connection.cursor() as cursor:
-            cursor.execute(sql)
-            result = cursor.fetchone()
-
-        # Si cursor renvoie un dict (ex: DictCursor), on extrait la première valeur
-        if result:
-            return result[0] if isinstance(result, (tuple, list)) else list(result.values())[0]
-
-        return 0
-
-
 if __name__ == '__main__':
     obj: AddressDao = AddressDao()
-    print(obj.max_id())
 
