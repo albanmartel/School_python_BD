@@ -31,17 +31,20 @@ class Dao[T](ABC):
         number: int = 0
 
         sql = f"SELECT COALESCE(MAX({id_name}), 0) AS {max_alias} FROM {table_name}"
-        with Dao.connection.cursor() as cursor:
-            cursor.execute(sql)
-            record = cursor.fetchone()
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(sql)
+                record = cursor.fetchone()
 
-        if record is not None:
-            # 1. Record est il un dictionnaire
-            if isinstance(record, dict):
-                number = record[max_alias]
-            # 2. Record n'est pas un dictionnaire
-            else:
-                number = record[0]
+            if record is not None:
+                # 1. Record est il un dictionnaire
+                if isinstance(record, dict):
+                    number = record[max_alias]
+                # 2. Record n'est pas un dictionnaire
+                else:
+                    number = record[0]
+        except Exception as e:
+            print(f"Une exception s'est produite : {e}")
 
         return int(number)
 
@@ -81,11 +84,12 @@ class Dao[T](ABC):
                             record_dict[field] = value
 
                         record_list.append(record_dict)
+            return record_list
 
         except Exception as e:
             print(f"Une exception s'est produite : {e}")
-        
-        return record_list
+
+            return record_list
 
     def read_one(self, id_name: str, table_name: str, table_id: int) -> dict[str, Any]:
         """
@@ -128,7 +132,9 @@ class Dao[T](ABC):
         except Exception as e:
             print(f"Une exception s'est produite : {e}")
 
-        return record_dict
+            return record_dict
+
+
 
     def delete_in_table(self, table_name: str, id_name:str, id_table: int ) -> bool:
         """Supprime en BD l'entité correspondant à id de table
