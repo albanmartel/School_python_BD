@@ -52,15 +52,33 @@ class Dao[T](ABC):
         :param table_name: nom de la table
         """
 
-        sql = "SELECT * FROM address WHERE id_address"
-        param = table_name
-        records = None
+        sql = f"SELECT * FROM {table_name}"
+        record_list: list[T] = []
+        columns= []
 
         with Dao.connection.cursor() as cursor:
-            cursor.execute(sql, param)
+            cursor.execute(sql)
             records = cursor.fetchall()
 
-        return records
+            if cursor.description is not None:
+                for col in cursor.description:
+                    # Note : le nom du champs est au début
+                    columns.append(col[0])
+                    
+        if records is not None and len(columns) > 0:
+            for record in records:
+                record_dict = {}
+                
+                for i in range(len(columns)):
+                    field = columns[i]
+                    value = record[i]
+                    record_dict[field] = value
+
+                # Instancier l'objet à partir du dictionnaire
+                entity = self._map_to_entity(record_dict)
+                record_list.append(record_dict)
+        
+        return record_list
 
     def read_one(self, table_id: int, table_name: str) -> Optional[T]:
         """
