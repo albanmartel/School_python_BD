@@ -102,13 +102,14 @@ class Dao[T](ABC):
 
         :return: un dictionnaire de la ligne concernée
         """
+
         sql = f"SELECT * FROM {table_name} WHERE {id_name} = %s"
         param = table_id
         record_dict: dict[str, Any] = {}
         columns = []
 
         try:
-            with Dao.connection.cursor() as cursor:
+            with (Dao.connection.cursor() as cursor):
                 cursor.execute(sql, param)
                 record = cursor.fetchone()
 
@@ -117,24 +118,29 @@ class Dao[T](ABC):
                         # Note : le nom du champs est au début
                         columns.append(col[0])
 
-            if record is not None:
-                # CAS 1 : Le curseur renvoie DÉJÀ un dictionnaire
+                if record is None:
+                    return record_dict
+
+                # Le curseur renvoie DÉJÀ un dictionnaire
                 if isinstance(record, dict):
-                    record_dict = record
-                else :
-                    # CAS 2 : Le curseur renvoie un tuple
-                    if len(columns) > 0:
-                        record_dict = {}
-                        for i in range(len(columns)):
-                            field = columns[i]
-                            value = record[i]
-                            record_dict[field] = value
+                    return record
+
+                if cursor.description is not None:
+                    # 1. Extraction manuelle du nom des colonnes
+                    columns = []
+                    for col in cursor.description:
+                        columns.append(col[0])
+
+                    # 2. Association manuelle des noms et des valeurs dans le dictionnaire
+                    for i in range(len(columns)):
+                        column_name = columns[i]
+                        column_value = record[i]
+                        record_dict[column_name] = column_value
+            return  record_dict
         except Exception as e:
             print(f"Une exception s'est produite : {e}")
 
             return record_dict
-
-
 
     def delete_in_table(self, table_name: str, id_name:str, id_table: int ) -> bool:
         """Supprime en BD l'entité correspondant à id de table
@@ -195,6 +201,40 @@ class Dao[T](ABC):
             print(f"Une exception s'est produite : {e}")
 
             return 0
+
+    def modify(self, table_name: str, data: dict, id_column: str, id_value: any ) -> bool:
+            """Mets à jour une ligne dans la table spécifiée.
+
+            :param table_name: Nom de la table SQL (ex: 'address')
+            :param data: Dictionnaire {colonne: nouvelle_valeur} des champs à modifier
+            :param id_column: Nom de la colonne servant de filtre (ex: 'id_address')
+            :param id_value: Valeur de l'identifiant
+            :return: True si au moins une ligne a été modifiée
+            """
+            if not data:
+                return False  # Rien à mettre à jour
+
+            # Génère "street = %s, city = %s, postal_code = %s"
+            set_clause = ", ".join([f"{col} = %s" for col in data.keys()])
+
+            sql = f"UPDATE {table_name} SET {set_clause} WHERE {id_column} = %s"
+
+            # On rassemble les valeurs des champs + la valeur du WHERE à la fin
+            params = tuple(data.values()) + (id_value,)
+
+            try:
+                with Dao.connection.cursor() as cursor:
+                    cursor.execute(sql, params)
+                    rowcount = cursor.rowcount
+
+                Dao.connection.commit()
+                return rowcount > 0
+
+            except Exception as e:
+                Dao.connection.rollback()
+                print(f"Erreur lors de la mise à jour dans {table_name} : {e}")
+
+                return False
 
     @abstractmethod
     def create(self, obj: T) -> int:
