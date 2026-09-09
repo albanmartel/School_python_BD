@@ -58,6 +58,22 @@ class Dao[T](ABC):
 
         return records
 
+    def read_one(self, table_id: int, table_name: str) -> Optional[T]:
+        """
+        Renvoit l'objet correspondant à l'entité dont l'id est id_entity
+           (ou None s'il n'a pu être trouvé)
+        :param table_id: l'identifiant de la table
+        :param table_name: nom de la table
+        """
+        sql = "SELECT * FROM %s WHERE id_address = %s"
+        params = (table_name, table_id)
+        
+        with Dao.connection.cursor() as cursor:
+            cursor.execute(sql, params)
+            record = cursor.fetchone()
+            
+        return record
+
     def delete_in_table(self, id_table: int, table_name: str) -> bool:
         """Supprime en BD l'entité correspondant à id de table
 
