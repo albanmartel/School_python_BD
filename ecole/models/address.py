@@ -16,10 +16,16 @@ class Address:
     - city        : ville
     - postal_code : code postal
     """
-    id: Optional[int] = field(default=None, init=False)
     street: str
     city: str
-    postal_code: int
+    postal_code: str
+    id: Optional[int] = None
 
     def __str__(self) -> str:
-        return f"{self.street}, {self.postal_code} {self.city}"
+        str_message: str = f"{self.street}, {self.postal_code} {self.city}"
+        if self.id is not None:
+            str_message += f", {self.id}"
+        else:
+            str_message += f", {0}"
+
+        return str_message
