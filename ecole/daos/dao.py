@@ -83,21 +83,40 @@ class Dao[T](ABC):
         
         return record_list
 
-    def read_one(self, table_id: int, table_name: str) -> Optional[T]:
+    def read_one(self, table_id: int, table_name: str) -> dict[str, Any]:
         """
         Renvoit l'objet correspondant à l'entité dont l'id est id_entity
            (ou None s'il n'a pu être trouvé)
         :param table_id: l'identifiant de la table
         :param table_name: nom de la table
         """
-        sql = "SELECT * FROM %s WHERE id_address = %s"
-        params = (table_name, table_id)
-        
+        sql = f"SELECT * FROM {table_name} WHERE id_address = {table_id}"
+        record_dict: dict[str, Any] = {}
+        columns = []
+
         with Dao.connection.cursor() as cursor:
-            cursor.execute(sql, params)
+            cursor.execute(sql)
             record = cursor.fetchone()
-            
-        return record
+
+            if cursor.description is not None:
+                for col in cursor.description:
+                    # Note : le nom du champs est au début
+                    columns.append(col[0])
+
+        if record is not None:
+            # CAS 1 : Le curseur renvoie DÉJÀ un dictionnaire
+            if isinstance(record, dict):
+                record_dict = record
+            else :
+                # CAS 2 : Le curseur renvoie un tuple
+                if len(columns) > 0:
+                    record_dict = {}
+                    for i in range(len(columns)):
+                        field = columns[i]
+                        value = record[i]
+                        record_dict[field] = value
+
+        return record_dict
 
     def delete_in_table(self, id_table: int, table_name: str) -> bool:
         """Supprime en BD l'entité correspondant à id de table
