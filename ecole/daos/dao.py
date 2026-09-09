@@ -30,16 +30,20 @@ class Dao[T](ABC):
 
         number: int = 0
 
-        sql = "SELECT COALESCE(MAX(%s), 0) AS %s FROM %s"
-        params = (table_id, max_alias, table_name)
+        sql = f"SELECT COALESCE(MAX({table_id}), 0) AS {max_alias} FROM {table_name}"
         with Dao.connection.cursor() as cursor:
-            cursor.execute(sql, params)
+            cursor.execute(sql)
             record = cursor.fetchone()
 
         if record is not None:
-            number = record[max_alias]
+            # 1. Record est il un dictionnaire
+            if isinstance(record, dict):
+                number = record[max_alias]
+            # 2. Record n'est pas un dictionnaire
+            else:
+                number = record[0]
 
-        return number
+        return int(number)
 
     def read_all_table(self, table_name) -> list[T]:
         """
