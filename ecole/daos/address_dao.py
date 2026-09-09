@@ -21,7 +21,7 @@ class AddressDao(Dao[Address]):
         """
 
         sql = "INSERT INTO address (street, city, postal_code) VALUES (%s, %s, %s)"
-        params = (address.__getattribute__('street'), address.__getattribute__('city'), address.__getattribute__('postal_code'))
+        params = (address.street, address.city, address.postal_code)
 
         new_id: int = 0
 
@@ -62,7 +62,7 @@ class AddressDao(Dao[Address]):
         :return: True si la mise à jour a pu être réalisée
         """
         sql = "UPDATE address SET street = %s, city = %s, postal_code = %s WHERE id_address = %s"
-        params = (address.__getattribute__('street'), address.__getattribute__('city'), address.__getattribute__('postal_code'), address.__getattribute__('id_address'))
+        params = (address.street, address.city, address.postal_code, address.id)
 
         with Dao.connection.cursor() as cursor:
             cursor.execute(sql, params)
