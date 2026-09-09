@@ -57,7 +57,28 @@ class Dao[T](ABC):
             records = cursor.fetchall()
 
         return records
-    
+
+    def delete_in_table(self, id_table: int, table_name: str) -> bool:
+        """Supprime en BD l'entité correspondant à id de table
+
+        :param id_table: l'id de la ligne à supprimer
+        :param table_name: le nom de la table concernée par la suppression de ligne
+        
+        :return: True si la suppression a pu être réalisée
+        """
+
+        sql = "DELETE FROM %s WHERE id_course = %s"
+        params = (table_name, id_table)
+
+        with Dao.connection.cursor() as cursor:
+            cursor.execute(sql, params)
+            rowcount = cursor.rowcount
+
+        Dao.connection.commit()
+
+        # si le nombre de ligne(s) supprimée(s) est suppérieur à zéro
+        return rowcount > 0
+
     @abstractmethod
     def create(self, obj: T) -> int:
         """Crée l'entité en BD correspondant à l'objet obj
