@@ -99,27 +99,30 @@ class Dao[T](ABC):
         record_dict: dict[str, Any] = {}
         columns = []
 
-        with Dao.connection.cursor() as cursor:
-            cursor.execute(sql, param)
-            record = cursor.fetchone()
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(sql, param)
+                record = cursor.fetchone()
 
-            if cursor.description is not None:
-                for col in cursor.description:
-                    # Note : le nom du champs est au début
-                    columns.append(col[0])
+                if cursor.description is not None:
+                    for col in cursor.description:
+                        # Note : le nom du champs est au début
+                        columns.append(col[0])
 
-        if record is not None:
-            # CAS 1 : Le curseur renvoie DÉJÀ un dictionnaire
-            if isinstance(record, dict):
-                record_dict = record
-            else :
-                # CAS 2 : Le curseur renvoie un tuple
-                if len(columns) > 0:
-                    record_dict = {}
-                    for i in range(len(columns)):
-                        field = columns[i]
-                        value = record[i]
-                        record_dict[field] = value
+            if record is not None:
+                # CAS 1 : Le curseur renvoie DÉJÀ un dictionnaire
+                if isinstance(record, dict):
+                    record_dict = record
+                else :
+                    # CAS 2 : Le curseur renvoie un tuple
+                    if len(columns) > 0:
+                        record_dict = {}
+                        for i in range(len(columns)):
+                            field = columns[i]
+                            value = record[i]
+                            record_dict[field] = value
+        except Exception as e:
+            print(f"Une exception s'est produite : {e}")
 
         return record_dict
 
