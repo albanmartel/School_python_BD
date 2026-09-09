@@ -23,6 +23,7 @@ def main():
 
     print("Test creation d'une address avec la méthode dao ")
     new_id: int = address_dao.create(address_instance)
+
     print("Test lecture d'une address avec la méthode dao ")
     address_instance: Optional[Address] = address_dao.read(new_id)
     print("Lecture de l'élément précédemment créé :\n%s" % address_instance)
