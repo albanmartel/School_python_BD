@@ -4,6 +4,8 @@
 """
 Application de test de dao course
 """
+from types import new_class
+
 from daos.course_dao import CourseDao
 from models.course import Course
 from typing import Optional
@@ -18,7 +20,8 @@ def main():
 
     print(f"Test id max table course : {course_dao.init_counter("id_course", "Max_Id_Course", "course")}")
     print(f"Test de read_all_table: {course_dao.read_table()}")
-    course_instance: Course = Course('Musique', '2026-06-22', '2026-12-31', 6)
+    course_instance: Course = Course('Musique', '2026-06-22', '2026-12-31')
+    course_instance.set_teacher()
 
     print("Test creation d'une address avec la méthode dao ")
     new_id: int = course_dao.create(course_instance)
