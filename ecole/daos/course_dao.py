@@ -45,22 +45,33 @@ class CourseDao(Dao[Course]):
         return course
 
     def update(self, course: Course) -> bool:
-        """Met à jour en BD l'entité Course correspondant à course, pour y correspondre
+        """Met à jour en BD l'entité correspondant à obj, pour y correspondre
 
-        :param course: cours déjà mis à jour en mémoire
+        :param obj: objet déjà mis à jour en mémoire
         :return: True si la mise à jour a pu être réalisée
         """
-        ...
-        return True
+        table_name: str = "course"
+        data_dict: dict = {
+            "name": course.name,
+            "start_date": course.start_date,
+            "end_date": course.end_date,
+        }
+        id_name: str = "id_course"
+        id_value: int = course.id
+
+        return self.modify(table_name, data_dict, id_name, id_value)
 
     def delete(self, course: Course) -> bool:
-        """Supprime en BD l'entité Course correspondant à course
+        """Supprime en BD l'entité correspondant à obj
 
-        :param course: cours dont l'entité Course correspondante est à supprimer
+        :param obj: objet dont l'entité correspondante est à supprimer
         :return: True si la suppression a pu être réalisée
         """
-        ...
-        return True
+        table_name:str = "course"
+        id_name: str = "id_course"
+        id_value: int = course.id
+
+        return self.delete_in_table(table_name, id_name, id_value)
 
     def read_table(self) -> list[dict[str, Any]]:
         """
