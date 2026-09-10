@@ -18,31 +18,24 @@ class CourseDao(Dao[Course]):
         :param course: à créer sous forme d'entité Course en BD
         :return: le nombre de lignes modifiées par la requête d'insertion en BD (0 si la création a échouée)
         """
-        with Dao.connection.cursor() as cursor:
-            sql = "INSERT INTO course(id_course, name, start_date, end_date, id_teacher) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(sql, course.name, course.start_date, course.end_date, course.id)
-            rowcount = cursor.rowcount
 
-        Dao.connection.commit()
+        course.id = int(self.init_counter("id_course", "Max_Id_Course", "course"))
+        values_param: tuple = (course.id, course.name, course.start_date, course.end_date, course.teacher)
+        table_params: list[str] = ["id_course", "name", "start_date", "end_date", "id_teacher"]
+        table_name: str = "course"
 
-        return rowcount
+        return self.insert(table_name, table_params, values_param)
 
     def read(self, id_course: int) -> Optional[Course]:
         """Renvoit le cours correspondant à l'entité dont l'id est id_course
            (ou None s'il n'a pu être trouvé)"""
         course: Optional[Course]
         
-        with Dao.connection.cursor() as cursor:
-            sql = "SELECT * FROM course WHERE id_course=%s"
-            cursor.execute(sql, (id_course,))
-            record = cursor.fetchone()
-        if record is not None:
-            course = Course(record['name'], record['start_date'], record['end_date'])
-            course.id = record['id_course']
-        else:
-            course = None
+        table_name: str = "course"
+        id_name: str = "id_course"
+        id_value: int = course.id
 
-        return course
+        return self.read_one(id_name, table_name, id_value)
 
     def update(self, course: Course) -> bool:
         """Met à jour en BD l'entité correspondant à obj, pour y correspondre
