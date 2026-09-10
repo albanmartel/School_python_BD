@@ -21,8 +21,6 @@ def main():
     print(f"Test id max table course : {course_dao.init_counter("id_course", "Max_Id_Course", "course")}")
     print(f"Test de read_all_table: {course_dao.read_table()}")
     course_instance: Course = Course('Musique', '2026-06-22', '2026-12-31')
-    course_instance.set_teacher()
-
     print("Test creation d'une address avec la méthode dao ")
     new_id: int = course_dao.create(course_instance)
     course_instance.id = new_id
