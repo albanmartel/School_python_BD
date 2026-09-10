@@ -3,21 +3,36 @@
 """
 Classe abstraite générique Dao[T], dont hérite les classes de DAO de chaque entité
 """
-
+import sys
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from typing import ClassVar, Optional, Any
 import pymysql.cursors
+from pymysql import MySQLError
 
 
 @dataclass
 class Dao[T](ABC):
-    connection: ClassVar[pymysql.Connection] = \
-        pymysql.connect(host='localhost',
-                        user='ecole',
-                        password='FqDEuKWd9TxLERZg6ooh',
-                        database='ecole',
-                        cursorclass=pymysql.cursors.DictCursor)
+    try :
+        connection: ClassVar[pymysql.Connection] = \
+            pymysql.connect(host='localhost',
+                            user='ecole',
+                            password='FqDEuKWd9TxLERZg6ooh',
+                            database='ecole',
+                            cursorclass=pymysql.cursors.DictCursor)
+    except pymysql.err.Error as e:
+        connection = None
+        print(f"Erreur de connexion à MariaDB : {e}")
+        print("Pas de connexion possible avec la base de données \"école\"\nFin du programme")
+       # Fin du programme avec code exit 1
+        sys.exit(1)
+
+    except MySQLError as e:
+        connection = None
+        print(f"Erreur MySQL : {e}")
+        print("Pas de connexion possible avec la base de données \"école\"\nFin du programme")
+        # Fin du programme avec code exit 1
+        sys.exit(1)
 
     def init_counter(self, id_name: str, max_alias: str, table_name: str) -> int:
         """
