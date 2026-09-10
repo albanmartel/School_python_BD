@@ -67,3 +67,12 @@ class TeacherDao(Dao[Teacher]):
         id_value: int = teacher.id
 
         return self.delete_in_table(table_name, id_name, id_value)
+
+    def read_table(self) -> list[dict[str, Any]]:
+        """
+        Renvoit une liste d'objets à tous les enregistrements d'une entité
+        (ou None s'il n'a pu être trouvé)
+
+        :return: liste de dictionnaires de la table Teacher
+        """
+        return self.read_all_table("teacher")
