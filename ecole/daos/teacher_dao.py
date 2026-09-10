@@ -28,3 +28,14 @@ class TeacherDao(Dao[Teacher]):
         table_name: str = "teacher"
 
         return self.insert(table_name, table_params, values_param)
+
+    def read(self, id_teacher: int) -> Optional[Teacher]:
+        """Renvoit le cours correspondant à l'entité dont l'id est id_course
+           (ou None s'il n'a pu être trouvé)"""
+        course: Optional[Teacher]
+
+        table_name: str = "teacher"
+        id_name: str = "id_teacher"
+        id_value: int = id_teacher
+
+        return self.read_one(id_name, table_name, id_value)
