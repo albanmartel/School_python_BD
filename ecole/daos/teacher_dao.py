@@ -51,7 +51,19 @@ class TeacherDao(Dao[Teacher]):
             "id_teacher": teacher.id,
             "hiring_date": teacher.hiring_date,
         }
-        id_name: str = "id_course"
+        id_name: str = "id_teacher"
         id_value: int = teacher.id
 
         return self.modify(table_name, data_dict, id_name, id_value)
+
+    def delete(self, teacher: Teacher) -> bool:
+        """Supprime en BD l'entité correspondant à obj
+
+        :param obj: objet dont l'entité correspondante est à supprimer
+        :return: True si la suppression a pu être réalisée
+        """
+        table_name:str = "teacher"
+        id_name: str = "id_teacher"
+        id_value: int = teacher.id
+
+        return self.delete_in_table(table_name, id_name, id_value)
