@@ -20,7 +20,6 @@ class CourseDao(Dao[Course]):
         """
 
         course.id = int(self.init_counter("id_course", "Max_Id_Course", "course"))
-        print(f"course max id: {course.id}")
         values_param: tuple = (course.id, course.name, course.start_date, course.end_date, course.teacher)
         table_params: list[str] = ["id_course", "name", "start_date", "end_date", "id_teacher"]
         table_name: str = "course"
